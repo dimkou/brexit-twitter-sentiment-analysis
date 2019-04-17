@@ -10,9 +10,9 @@ class DatasetLoader:
         self.path = path
 
     def loadData(self):
-        pickleData = self._checkAndLoadPickle()
-        if pickleData:
-            self._convertToCsv(pickleData)
+        pickle_data = self._checkAndLoadPickle()
+        if pickle_data:
+            self._convertToCsv(pickle_data)
 
         df = pd.read_csv(self.path)
         return list(zip(df["Date"], df["Text"], df["Score"]))

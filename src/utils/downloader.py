@@ -4,48 +4,55 @@ import pandas as pd
 
 
 class Twitter:
-    def __init__(self, n_jobs=2):
-        self.n_jobs = n_jobs
+    def __init__(self):
+        pass
 
-    def getTweets(self, query, begindate, enddate, limit=None):
+    def getTweets(self, query, begin_date, end_date, limit=None, n_jobs=2):
         # Date format is DD-MM-YYY (string)
-        bday, bmonth, byear = begindate.split('-')
-        eday, emonth, eyear = enddate.split('-')
+        b_day, b_month, b_year = begin_date.split('-')
+        e_day, e_month, e_year = end_date.split('-')
         tweets = query_tweets(
             query,
-            begindate=dt.date(int(byear), int(bmonth), int(bday)),
-            enddate=dt.date(int(eyear), int(emonth), int(eday)),
+            begindate=dt.date(int(b_year), int(b_month), int(b_day)),
+            enddate=dt.date(int(e_year), int(e_month), int(e_day)),
             limit=limit,
             lang='en',
-            poolsize=self.n_jobs)
-        textlist = [(str(t.timestamp.strftime('%d-%m-%Y')), t.text.strip())
-                    for t in tweets]
-        return textlist
+            poolsize=n_jobs)
+        text_list = [(str(t.timestamp.strftime('%d-%m-%Y')), t.text.strip())
+                     for t in tweets]
+        return text_list
 
-    def getTweetsOneDay(self, query, date, limit=None):
+    def getTweetsFromDates(self,
+                           query,
+                           list_of_dates,
+                           limit_per_day=2000,
+                           n_jobs=2):
         # Date format is DD-MM-YYYY (string)
-        bday, bmonth, byear = date.split('-')
-        begindate = dt.date(int(byear), int(bmonth), int(bday))
-        enddate = begindate + dt.timedelta(days=1)
-        enddate = str(enddate.strftime('%d-%m-%Y'))
-        return self.getTweets(query, date, enddate, limit)
-
-    def writeCSV(self, query, list_of_dates, outpath, limit_per_day=2000):
-        res = {"Date": [], "Text": [], "Score": []}
+        res = []
         for date in list_of_dates:
-            tweetlist = self.getTweetsOneDay(query, date, limit=limit_per_day)
-            for t in tweetlist:
-                res["Date"].append(t[0])
-                res["Text"].append(t[1])
-                res["Score"].append(0.0)
+            b_day, b_month, b_year = date.split('-')
+            begin_date = dt.date(int(b_year), int(b_month), int(b_day))
+            end_date = begin_date + dt.timedelta(days=1)
+            end_date = str(end_date.strftime('%d-%m-%Y'))
+            res += self.getTweets(query, date, end_date, limit_per_day, n_jobs)
+        return res
+
+    def writeCSV(self, tweets, out_path):
+        res = {"Date": [], "Text": [], "Score": []}
+        for t in tweets:
+            res["Date"].append(t[0])
+            res["Text"].append(t[1])
+            res["Score"].append(0.0)
         df = pd.DataFrame(res, columns=['Date', 'Text', 'Score'])
-        df.to_csv(outpath, index=False)
+        df.to_csv(out_path, index=False)
 
 
 if __name__ == '__main__':
-    twitter = Twitter(n_jobs=20)
+    twitter = Twitter()
     dates = [
         "22-02-2016", "23-06-2016", "19-06-2017", "14-11-2018", "25-11-2018",
         "15-01-2019"
     ]
-    twitter.writeCSV("brexit", dates, "test.csv", limit_per_day=None)
+    tweets = twitter.getTweetsFromDates(
+        'brexit', dates, limit_per_day=20, n_jobs=20)
+    twitter.writeCSV(tweets, "test.csv")
