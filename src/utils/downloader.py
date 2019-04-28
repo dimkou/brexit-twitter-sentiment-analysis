@@ -1,0 +1,58 @@
+from twitterscraper import query_tweets
+import datetime as dt
+import pandas as pd
+
+
+class Twitter:
+    def __init__(self):
+        pass
+
+    def getTweets(self, query, begin_date, end_date, limit=None, n_jobs=2):
+        # Date format is DD-MM-YYY (string)
+        b_day, b_month, b_year = begin_date.split('-')
+        e_day, e_month, e_year = end_date.split('-')
+        tweets = query_tweets(
+            query,
+            begindate=dt.date(int(b_year), int(b_month), int(b_day)),
+            enddate=dt.date(int(e_year), int(e_month), int(e_day)),
+            limit=limit,
+            lang='en',
+            poolsize=n_jobs)
+        text_list = [(str(t.timestamp.strftime('%d-%m-%Y')), t.text.strip())
+                     for t in tweets]
+        return text_list
+
+    def getTweetsFromDates(self,
+                           query,
+                           list_of_dates,
+                           limit_per_day=2000,
+                           n_jobs=2):
+        # Date format is DD-MM-YYYY (string)
+        res = []
+        for date in list_of_dates:
+            b_day, b_month, b_year = date.split('-')
+            begin_date = dt.date(int(b_year), int(b_month), int(b_day))
+            end_date = begin_date + dt.timedelta(days=1)
+            end_date = str(end_date.strftime('%d-%m-%Y'))
+            res += self.getTweets(query, date, end_date, limit_per_day, n_jobs)
+        return res
+
+    def writeCSV(self, tweets, out_path):
+        res = {"Date": [], "Text": [], "Score": []}
+        for t in tweets:
+            res["Date"].append(t[0])
+            res["Text"].append(t[1])
+            res["Score"].append(0.0)
+        df = pd.DataFrame(res, columns=['Date', 'Text', 'Score'])
+        df.to_csv(out_path, index=False)
+
+
+if __name__ == '__main__':
+    twitter = Twitter()
+    dates = [
+        "22-02-2016", "23-06-2016", "19-06-2017", "14-11-2018", "25-11-2018",
+        "15-01-2019"
+    ]
+    tweets = twitter.getTweetsFromDates(
+        'brexit', dates, limit_per_day=20, n_jobs=20)
+    twitter.writeCSV(tweets, "test.csv")
