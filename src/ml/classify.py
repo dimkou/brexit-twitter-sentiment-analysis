@@ -66,8 +66,8 @@ def train_classifier(features, label, classifier="logistic_regression"):
     probability_to_be_positive = model.predict_proba(features)[:, 1]
     # check AUC(Area Under the Roc Curve) to see how well the score
     # discriminates between negative and positive
-    print ("auc (train data):", roc_auc_score(label,
-                                              probability_to_be_positive))
+    print("auc (train data):", roc_auc_score(label,
+          probability_to_be_positive))
 
 
 # apply the preprocess function for all the tweets in the dataset
