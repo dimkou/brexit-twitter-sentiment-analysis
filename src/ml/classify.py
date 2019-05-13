@@ -6,6 +6,7 @@ from sklearn.metrics import roc_auc_score
 from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.svm import SVC
+from sklearn.ensemble import RandomForestClassifier
 
 
 def import_tweets(filename, header=None):
@@ -57,7 +58,9 @@ def train_classifier(features, label, classifier="logistic_regression"):
     elif classifier == "naive_bayes":
         model = MultinomialNB()
     elif classifier == "svm":
-        model = SVC()
+        model = SVC(probability=True, cache_size=5000)
+    elif classifier == 'random_forest':
+        model = RandomForestClassifier(n_estimators=2000, n_jobs=8)
     else:
         print("Incorrect selection of classifier")
     # fit model to data
@@ -79,5 +82,5 @@ data = np.array(tweet_dataset.text)
 label = np.array(tweet_dataset.sentiment)
 features = feature_extraction(data, method="tfidf")
 print("Feature extraction")
-train_classifier(features, label, "svm")
+train_classifier(features, label, "random_forest")
 print("Trained classifier")
