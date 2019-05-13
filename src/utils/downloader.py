@@ -1,6 +1,15 @@
 from twitterscraper import query_tweets
+import twitterscraper.query
 import datetime as dt
 import pandas as pd
+import random
+import string
+
+
+def randomString(stringLength=10):
+    """Generate a random string of fixed length """
+    letters = string.ascii_lowercase
+    return ''.join(random.choice(letters) for i in range(stringLength))
 
 
 class Twitter:
@@ -9,17 +18,21 @@ class Twitter:
 
     def getTweets(self, query, begin_date, end_date, limit=None, n_jobs=2):
         # Date format is DD-MM-YYY (string)
+        twitterscraper.query.HEADER = {
+            'User-Agent': random.choice(twitterscraper.query.HEADERS_LIST)
+        }
         b_day, b_month, b_year = begin_date.split('-')
         e_day, e_month, e_year = end_date.split('-')
-        tweets = query_tweets(
-            query,
-            begindate=dt.date(int(b_year), int(b_month), int(b_day)),
-            enddate=dt.date(int(e_year), int(e_month), int(e_day)),
-            limit=limit,
-            lang='en',
-            poolsize=n_jobs)
-        text_list = [(str(t.timestamp.strftime('%d-%m-%Y')), t.text.strip())
-                     for t in tweets]
+        tweets = query_tweets(query,
+                              begindate=dt.date(int(b_year), int(b_month),
+                                                int(b_day)),
+                              enddate=dt.date(int(e_year), int(e_month),
+                                              int(e_day)),
+                              limit=limit,
+                              lang='en',
+                              poolsize=n_jobs)
+        text_list = [(str(t.timestamp.strftime('%d-%m-%Y')),
+                      t.text.strip().replace('\n', ' ')) for t in tweets]
         return text_list
 
     def getTweetsFromDates(self,
@@ -48,11 +61,19 @@ class Twitter:
 
 
 if __name__ == '__main__':
+    for i in range(3000):
+        twitterscraper.query.HEADERS_LIST.append(
+            f'MyBrowser{randomString(10)}/9.80 (X11)')
     twitter = Twitter()
-    dates = [
-        "22-02-2016", "23-06-2016", "19-06-2017", "14-11-2018", "25-11-2018",
-        "15-01-2019"
-    ]
-    tweets = twitter.getTweetsFromDates(
-        'brexit', dates, limit_per_day=20, n_jobs=20)
-    twitter.writeCSV(tweets, "test.csv")
+    # dates = [
+    #     "22-02-2016", "23-06-2016", "19-06-2017", "14-11-2018", "25-11-2018",
+    #     "15-01-2019"
+    # ]
+    dates = ['23-06-2016']
+    for date in dates:
+        tweets = []
+        while len(tweets) == 0:
+            tweets = twitter.getTweetsFromDates('brexit', [date],
+                                                limit_per_day=40000,
+                                                n_jobs=4)
+        twitter.writeCSV(tweets, f"test{date}.csv")
