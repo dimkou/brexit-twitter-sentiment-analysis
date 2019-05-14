@@ -99,7 +99,7 @@ class MLTweetSentiment:
             y_pred = model.predict(inference_feature)
             random_idx = np.random.choice(
                 list(range(inference_feature.shape[0])),
-                50,
+                100,
                 replace=False).tolist()
             for item in random_idx:
                 print(list(dataset.text)[item], y_pred[item])
