@@ -130,7 +130,7 @@ if __name__ == '__main__':
     logistic_args = {'multi_class': 'auto', 'C': 1}
     naive_bayes_args = {}
     random_forest_args = {'n_estimators': [100, 300, 500],
-                          'max_depth': [3, 5], n_jobs:20}
+                          'max_depth': [3, 5], 'n_jobs': [20]}
     svm_args = {}
     classifier_args = [logistic_args, naive_bayes_args, random_forest_args,
                        svm_args]
@@ -158,5 +158,5 @@ if __name__ == '__main__':
                 print("Feature Extractor: {0}\tModel: {1}\t"
                       "Parameters: {2}\tF1 Score: {3}\tAccuracy:"
                       "{4}".format(feature_extractor, classifier,
-                                   classifier_args[j], f1, accuracy))
+                                   possibility, f1, accuracy))
                 twitterSentiment.evaluate_on_brexit(model, inference_features)
