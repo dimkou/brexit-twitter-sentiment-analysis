@@ -16,9 +16,8 @@ class MLTweetSentiment:
         self.train_data_path = train_data_path
         self.inference_data_paths = inference_data_paths
 
-    def import_tweets(self, path, columns, delete_columns):
-        dataset = pd.read_csv(path,
-                              encoding='latin-1')
+    def import_tweets(self, path, columns, delete_columns, delimiter=','):
+        dataset = pd.read_csv(path,encoding='utf-8',delimiter=delimiter,error_bad_lines=False, lineterminator='\n')
         dataset.columns = columns
 
         for i in delete_columns:
@@ -45,6 +44,7 @@ class MLTweetSentiment:
         inference_dataset_delete_columns = ['date', 'score']
         inference_dataset = []
         for inference_data_path in self.inference_data_paths:
+            print(inference_data_path)
             inference_dataset.append(
                     self.import_tweets(
                         inference_data_path,
@@ -94,7 +94,7 @@ class MLTweetSentiment:
     def evaluate_on_brexit(self, model, inference_features):
         for i, inference_feature in enumerate(inference_features):
             dataset = pd.read_csv(inference_dataset_paths[i],
-                                  encoding='latin-1')
+                                  encoding='utf-8', error_bad_lines=False, lineterminator='\n')
             dataset.columns = self.inference_dataset_columns
             y_pred = model.predict(inference_feature)
             random_idx = np.random.choice(
@@ -108,12 +108,12 @@ class MLTweetSentiment:
 
 if __name__ == '__main__':
     inference_dataset_paths = [
-        "../../data/test14-11-2018.csv"]
-    #     "../../data/test15-01-2019.csv",
-    #     "../../data/test19-06-2017.csv",
-    #     "../../data/test22-02-2016.csv",
-    #     "../../data/test23-06-2016.csv",
-    #     "../../data/test25-11-2018.csv"]
+        "../../data/test14-11-2018.csv",
+        "../../data/test15-01-2019.csv",
+        "../../data/test22-02-2016.csv",
+        "../../data/test23-06-2016.csv",
+        "../../data/test25-11-2018.csv",
+        "../../data/test19-06-2017.csv"]
 
     twitterSentiment = MLTweetSentiment(
             "../../data/twitter_data.csv",
@@ -130,7 +130,7 @@ if __name__ == '__main__':
     logistic_args = {'multi_class': 'auto', 'C': 1}
     naive_bayes_args = {}
     random_forest_args = {'n_estimators': [100, 300, 500],
-                          'max_depth': [3, 5]}
+                          'max_depth': [3, 5], 'n_jobs': [20]}
     svm_args = {}
     classifier_args = [logistic_args, naive_bayes_args, random_forest_args,
                        svm_args]
@@ -158,5 +158,5 @@ if __name__ == '__main__':
                 print("Feature Extractor: {0}\tModel: {1}\t"
                       "Parameters: {2}\tF1 Score: {3}\tAccuracy:"
                       "{4}".format(feature_extractor, classifier,
-                                   classifier_args[j], f1, accuracy))
+                                   possibility, f1, accuracy))
                 twitterSentiment.evaluate_on_brexit(model, inference_features)
