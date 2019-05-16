@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import re
+from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split, ParameterGrid
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.linear_model import LogisticRegression
@@ -17,7 +18,8 @@ class MLTweetSentiment:
         self.inference_data_paths = inference_data_paths
 
     def import_tweets(self, path, columns, delete_columns, delimiter=','):
-        dataset = pd.read_csv(path,encoding='utf-8',delimiter=delimiter,error_bad_lines=False, lineterminator='\n')
+        dataset = pd.read_csv(path, encoding='utf-8', delimiter=delimiter,
+                              error_bad_lines=False, lineterminator='\n')
         dataset.columns = columns
 
         for i in delete_columns:
@@ -81,21 +83,36 @@ class MLTweetSentiment:
         return train_features, labels, inference_features
 
     def train_and_evaluate_classifier(self, train_features, labels,
-                                      classifier, classifier_args):
+                                      classifier, classifier_args,
+                                      scaler):
         X_train, X_test, y_train, y_test = train_test_split(
                 train_features, labels, test_size=0.2, random_state=42)
         model = classifier(**classifier_args)
+        if scaler:
+            scaler.fit(X_train)
+            X_train = scaler.transform(X_train)
+            X_test = scaler.transform(X_test)
         model.fit(X_train, y_train)
         y_pred = model.predict(X_test)
         f1 = f1_score(y_test, y_pred, average='macro')
         accuracy = accuracy_score(y_test, y_pred)
-        return accuracy, f1, model
+        return accuracy, f1, model, scaler
 
-    def evaluate_on_brexit(self, model, inference_features):
+    def evaluate_on_brexit(self, model, inference_features, scaler):
+        """A func
+
+        :arg1:
+        :returns: None
+
+        """
         for i, inference_feature in enumerate(inference_features):
             dataset = pd.read_csv(inference_dataset_paths[i],
-                                  encoding='utf-8', error_bad_lines=False, lineterminator='\n')
+                                  encoding='utf-8',
+                                  error_bad_lines=False,
+                                  lineterminator='\n')
             dataset.columns = self.inference_dataset_columns
+            if scaler:
+                inference_feature = scaler.tranform(inference_feature)
             y_pred = model.predict(inference_feature)
             random_idx = np.random.choice(
                 list(range(inference_feature.shape[0])),
@@ -108,7 +125,7 @@ class MLTweetSentiment:
 
 if __name__ == '__main__':
     inference_dataset_paths = [
-        "../../data/test14-11-2018.csv",
+        "../../data/test14-11-2018.csv"
         "../../data/test15-01-2019.csv",
         "../../data/test22-02-2016.csv",
         "../../data/test23-06-2016.csv",
@@ -147,16 +164,20 @@ if __name__ == '__main__':
                                 train_dataset, inference_datasets,
                                 feature_extractor,
                                 features_extractors_args[i])
-                print(Counter(labels))
-                accuracy, f1, model = \
+                scaler = None
+                if isinstance(classifier, SVC):
+                    scaler = StandardScaler(with_mean=False)
+                accuracy, f1, model, scaler = \
                     twitterSentiment.train_and_evaluate_classifier(
                         train_features,
                         labels,
                         classifier,
-                        possibility
+                        possibility,
+                        scaler
                         )
                 print("Feature Extractor: {0}\tModel: {1}\t"
                       "Parameters: {2}\tF1 Score: {3}\tAccuracy:"
                       "{4}".format(feature_extractor, classifier,
                                    possibility, f1, accuracy))
-                twitterSentiment.evaluate_on_brexit(model, inference_features)
+                twitterSentiment.evaluate_on_brexit(model, inference_features,
+                                                    scaler)
