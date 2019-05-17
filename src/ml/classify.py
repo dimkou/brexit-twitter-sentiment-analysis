@@ -9,6 +9,7 @@ from sklearn.metrics import f1_score, accuracy_score
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
+from xgboost import XGBClassifier
 from collections import Counter
 
 
@@ -143,14 +144,16 @@ if __name__ == '__main__':
     features_extractors = [TfidfVectorizer, CountVectorizer]
     features_extractors_args = [tfidf_args, count_args]
     classifiers = [LogisticRegression, MultinomialNB, RandomForestClassifier,
-                   SVC]
+                   XGBClassifier, SVC]
     logistic_args = {'multi_class': 'auto', 'C': 1}
     naive_bayes_args = {}
     random_forest_args = {'n_estimators': [100, 300, 500],
                           'max_depth': [3, 5], 'n_jobs': [20]}
+    xgb_args = {'max_depth': [5, 7, 9, 11], 'n_estimators': [100, 300, 500, 700], 
+                'n_jobs': [16], 'subsample': [0.9, 1.0], 'reg_lamba': [0.1, 1.0]}
     svm_args = {}
     classifier_args = [logistic_args, naive_bayes_args, random_forest_args,
-                       svm_args]
+                       xgb_args, svm_args]
     for i, feature_extractor in enumerate(features_extractors):
         for j, classifier in enumerate(classifiers):
             try:
