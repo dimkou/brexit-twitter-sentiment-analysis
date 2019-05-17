@@ -11,6 +11,9 @@ from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
 from xgboost import XGBClassifier
 from collections import Counter
+from nltk.stem import PorterStemmer
+from nltk.tokenize import word_tokenize
+from nltk.stem import WordNetLemmatizer
 
 
 class MLTweetSentiment:
@@ -65,9 +68,19 @@ class MLTweetSentiment:
         tweet = re.sub(r'@[^\s]+', 'AT_USER', tweet)
         # correct all multiple white spaces to a single white space
         tweet = re.sub(r'[\s]+', ' ', tweet)
+        # remove punctuation
+        tweet = re.sub(r'[^\w\s]', '', tweet)
         # convert "#topic" to just "topic"
         tweet = re.sub(r'#([^\s]+)', r'\1', tweet)
-        return tweet
+        # stemming and lemmatizing
+        stemmer = PorterStemmer()
+        lemmatizer = WordNetLemmatizer()
+        temp_tweet = word_tokenize(tweet)
+        tweet = []
+        for word in tweet:
+            temp_tweet.append(lemmatizer.lemmatize(stemmer.stem(word)))
+
+        return ' '.join(temp_tweet)
 
     def convert_to_format_extract_features(self, train_dataset,
                                            inference_datasets,
