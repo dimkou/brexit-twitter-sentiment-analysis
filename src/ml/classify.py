@@ -162,9 +162,9 @@ if __name__ == '__main__':
     naive_bayes_args = {}
     random_forest_args = {'n_estimators': [100, 300, 500],
                           'max_depth': [3, 5], 'n_jobs': [20]}
-    xgb_args = {'max_depth': [5, 7, 9, 11], 'n_estimators': [100, 300, 500, 700], 
-                'n_jobs': [16], 'subsample': [0.9, 1.0], 'reg_lamba': [0.1, 1.0]}
-    svm_args = {}
+    xgb_args = {'max_depth': [9, 11, 13], 'n_estimators': [2000, 1500], 
+                'n_jobs': [16], 'learning_rate': [0.01, 0.1, 0.2, 1.0]}
+    svm_args = {'max_iter': 100000, 'cache_size': 150000, 'verbosity': True}
     classifier_args = [logistic_args, naive_bayes_args, random_forest_args,
                        xgb_args, svm_args]
     for i, feature_extractor in enumerate(features_extractors):
