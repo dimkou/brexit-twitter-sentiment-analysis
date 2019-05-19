@@ -101,11 +101,10 @@ if __name__ == '__main__':
         twitterscraper.query.HEADERS_LIST.append(
             f'MyBrowser{randomString(10)}/9.80 (X11)')
     twitter = Twitter()
-    # dates = [
-    #     "22-02-2016", "23-06-2016", "19-06-2017", "14-11-2018", "25-11-2018",
-    #     "15-01-2019"
-    # ]
-    dates = ['23-06-2016']
+    dates = [
+        "22-02-2016", "23-06-2016", "19-06-2017", "14-11-2018", "25-11-2018",
+        "15-01-2019"
+    ]
     for date in dates:
         tweets = []
         while len(tweets) == 0:
