@@ -10,11 +10,39 @@ This is the repo for the project of ETH's GESS course [Data Science in Techno-So
 5. November 25, 2018: EU endorses the aforementioned withdrawal agreement
 6. January 15, 2019: UK parliament rejects the agreement
 
-#### Future events
-1. December 31, 2020: Transition ends
+## Downloading the code
+The code can be cloned from GitHub using:
+```bash
+git clone https://github.com/dimkou/brexit-twitter-sentiment-analysis.git && cd brexit-twitter-sentiment-analysis
+```
 
-## Data Collection and Preprocessing
+## Downloading the training data
+Due to the large size of the training data, they are not included in the repo. The training data can be downloaded from [here](https://polybox.ethz.ch/index.php/s/KAOUIyv3CfbgxHt) or by using the command:
+```bash
+wget https://polybox.ethz.ch/index.php/s/KAOUIyv3CfbgxHt/download -O data/twitter_data.csv.gz
+```
 
-## Sentiment Analysis algorithms
+Then we need to extract the data using the following command:
+```bash
+gzip -d data/twitter_data.csv.gz
+```
 
-## Frontend and presentation
+## Installing prerequisites
+In order to run our code, some libraries such as `scikit-learn` are required to be installed. All the prerequisites are included in the file `requirements.txt` and can simply be installed using the command:
+```bash
+pip install -r requirements.txt
+```
+
+## Running the code
+Now that we have our training data and all prerequisites installed we are ready to run the code. Simply run the following command to train and evaluate all classifiers:
+```bash
+python src/ml/classify.py
+```
+*NOTE: Training all classifiers and searching for the optimal hyperparameters can take up to 3 days (on 16 cores).*
+
+## Downloading Brexit tweets (optional)
+All brexit tweets are already included in the repo. However, for completeness we explain how one can download them using `twitterscraper`. To this end, we have implemented `downloader.py` to simplify the process:
+```bash
+python src/utils/downloader.py && mv src/utils/test* data/
+```
+*NOTE: Downloading the tweets can take up to 2-3 hours.*
