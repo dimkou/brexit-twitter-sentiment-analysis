@@ -246,12 +246,12 @@ class MLTweetSentiment:
 if __name__ == '__main__':
     # Take all the necessary paths
     inference_dataset_paths = [
-        "../../data/test14-11-2018.csv"]
-    # "../../data/test15-01-2019.csv",
-    # "../../data/test22-02-2016.csv",
-    # "../../data/test23-06-2016.csv",
-    # "../../data/test25-11-2018.csv",
-    # "../../data/test19-06-2017.csv"]
+        "../../data/test14-11-2018.csv",
+        "../../data/test15-01-2019.csv",
+        "../../data/test22-02-2016.csv",
+        "../../data/test23-06-2016.csv",
+        "../../data/test25-11-2018.csv",
+        "../../data/test19-06-2017.csv"]
 
     # Initialize an instance of the class with the paths
     twitterSentiment = MLTweetSentiment(
