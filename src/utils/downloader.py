@@ -8,6 +8,21 @@ class Twitter:
         pass
 
     def getTweets(self, query, begin_date, end_date, limit=None, n_jobs=2):
+        """A function that takes a query and some dates and scrapes all tweets
+        from Twitter that satisfy the given criteria.
+
+        Args:
+            query (str): The search string.
+            begin_date (string): The start date that tweets are going to be
+                scraped.
+            end_date (string): The start date that tweets are going to be
+                scraped.
+            limit (string): A threshold number of tweets downloaded
+            n_jobs (int): The degree of parallelism.
+
+        Returns:
+            text_list (list): A list of the scraped tweets.
+        """
         # Date format is DD-MM-YYY (string)
         b_day, b_month, b_year = begin_date.split('-')
         e_day, e_month, e_year = end_date.split('-')
@@ -27,6 +42,20 @@ class Twitter:
                            list_of_dates,
                            limit_per_day=2000,
                            n_jobs=2):
+        """A function that takes a query and some dates and scrapes all tweets
+        from Twitter that satisfy the given criteria.
+
+        Args:
+            query (str): The search string.
+            list_of_dates (list): The dates that we are going to scrape
+                Twitter.
+            limit_per_day (int): A threshold number of tweets downloaded per
+                date.
+            n_jobs (int): The degree of parallelism.
+
+        Returns:
+            res (list): A list of the scraped tweets.
+        """
         # Date format is DD-MM-YYYY (string)
         res = []
         for date in list_of_dates:
@@ -38,6 +67,13 @@ class Twitter:
         return res
 
     def writeCSV(self, tweets, out_path):
+        """A function that takes a list of tweets and writes them to a csv.
+
+        Args:
+            tweets (list): A list of tweets with their dates.
+            out_path (string): The path that the tweets are going to be
+            written.
+        """
         res = {"Date": [], "Text": [], "Score": []}
         for t in tweets:
             res["Date"].append(t[0])
