@@ -235,7 +235,7 @@ class MLTweetSentiment:
                 inference_feature = scaler.tranform(inference_feature)
             y_pred = model.predict(inference_feature)
             for i in range(len(list(dataset.text))):
-                print("{ ", list(dataset.text)[i], ":", y_pred[i], "},")
+                print("{ \"", list(dataset.text)[i], "\":", y_pred[i], "},")
 
 
 if __name__ == '__main__':
