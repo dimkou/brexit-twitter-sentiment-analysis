@@ -234,19 +234,25 @@ class MLTweetSentiment:
             if scaler:
                 inference_feature = scaler.tranform(inference_feature)
             y_pred = model.predict(inference_feature)
-            for i in range(len(list(dataset.text))):
-                print("{ \"", list(dataset.text)[i], "\":", y_pred[i], "},")
+            random_idx = np.random.choice(
+                list(range(inference_feature.shape[0])),
+                100,
+                replace=False).tolist()
+            for item in random_idx:
+                print(list(dataset.text)[item], y_pred[item])
+            print(Counter(y_pred))
 
 
 if __name__ == '__main__':
     # Take all the necessary paths
     inference_dataset_paths = [
+        "../../data/test14-11-2018.csv",
+        "../../data/test15-01-2019.csv",
         "../../data/test22-02-2016.csv",
         "../../data/test23-06-2016.csv",
-        "../../data/test19-06-2017.csv",
-        "../../data/test14-11-2018.csv",
         "../../data/test25-11-2018.csv",
-        "../../data/test15-01-2019.csv"]
+        "../../data/test19-06-2017.csv"]
+
     # Initialize an instance of the class with the paths
     twitterSentiment = MLTweetSentiment(
             "../../data/twitter_data.csv",
@@ -256,13 +262,21 @@ if __name__ == '__main__':
     # Preprocess the tweets
     train_dataset, inference_datasets = twitterSentiment.preprocess_tweets()
     # Set up your grid
+    tfidf_args = {'stop_words': 'english', 'sublinear_tf': True}
     count_args = {'stop_words': 'english'}
-    features_extractors = [CountVectorizer]
-    features_extractors_args = [count_args]
-    classifiers = [XGBClassifier]
-    xgb_args = {'max_depth': [13], 'n_estimators': [2000],
-                'n_jobs': [16], 'learning_rate': [0.2]}
-    classifier_args = [xgb_args]
+    features_extractors = [TfidfVectorizer, CountVectorizer]
+    features_extractors_args = [tfidf_args, count_args]
+    classifiers = [LogisticRegression, MultinomialNB, RandomForestClassifier,
+                   XGBClassifier, SVC]
+    logistic_args = {'multi_class': 'auto', 'C': 1}
+    naive_bayes_args = {}
+    random_forest_args = {'n_estimators': [100, 300, 500],
+                          'max_depth': [3, 5], 'n_jobs': [20]}
+    xgb_args = {'max_depth': [9, 11, 13], 'n_estimators': [2000, 1500],
+                'n_jobs': [16], 'learning_rate': [0.01, 0.1, 0.2, 1.0]}
+    svm_args = {'max_iter': 100000, 'cache_size': 150000, 'verbosity': True}
+    classifier_args = [logistic_args, naive_bayes_args, random_forest_args,
+                       xgb_args, svm_args]
     # Run the grid and print the score as well as the brexit tweets with
     # annotation
     for i, feature_extractor in enumerate(features_extractors):
@@ -293,6 +307,5 @@ if __name__ == '__main__':
                       "Parameters: {2}\tF1 Score: {3}\tAccuracy:"
                       "{4}".format(feature_extractor, classifier,
                                    possibility, f1, accuracy))
-                print("============================================================================================================")
                 twitterSentiment.evaluate_on_brexit(model, inference_features,
                                                     scaler)

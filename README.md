@@ -28,9 +28,9 @@ gzip -d data/twitter_data.csv.gz
 ```
 
 ## Installing prerequisites
-In order to run our code, some libraries such as `scikit-learn` are required to be installed. All the prerequisites are included in the file `requirements.txt` and can simply be installed using the command:
+In order to run our code, some libraries such as `scikit-learn` are required to be installed. All the prerequisites are included in the file `requirements-ml.txt` and can simply be installed using the command:
 ```bash
-pip install -r requirements.txt
+pip install -r requirements-ml.txt
 ```
 
 ## Running the code
@@ -46,3 +46,16 @@ All brexit tweets are already included in the repo. However, for completeness we
 python src/utils/downloader.py && mv src/utils/test* data/
 ```
 *NOTE: Downloading the tweets can take up to 2-3 hours.*
+
+## Running the demo
+All the prerequisites are included in the file `requirements-demo.txt` and can simply be installed using the command:
+```bash
+pip install -r requirements-demo.txt
+```
+
+Then simply go the folder where the file manage.py is located and run:
+```bash
+python manage.py runserver
+```
+
+Then open your browser at 127.0.0.1:8000 and experiment! On click in every date a tweet and its label will appear as a popup window. We have selected 100 random tweets from every date.
