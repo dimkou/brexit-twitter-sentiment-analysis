@@ -1,0 +1,123 @@
+body {
+    margin: 0;
+    font-family: "Open Sans";
+}
+
+h1 {
+    text-align: center;
+    font-family: "Open Sans";
+    margin: 15px 0 0;
+    font-weight: normal;
+    font-size: 20px;
+    color: #777;
+}
+
+#svgContainer {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 65px;
+    bottom: 0;
+    overflow: hidden;
+}
+
+
+svg {
+    width: 100%;
+    height: 100%;
+}
+
+svg.move {
+    cursor: move;
+}
+
+svg .dayColumn {
+    opacity: 0.6;
+}
+
+svg .dayColumn.selected {
+    opacity: 1;
+}
+
+svg .dayColumn path {
+    stroke: #39A10A;
+    stroke-width: 1;
+    fill: #EBFAE8;
+}
+
+svg .dayColumn.selected path {
+    fill: #E3F7DF;
+}
+
+svg .background {
+    opacity: 0.5;
+}
+
+svg .leftBackground, svg .rightBackground {
+    opacity: 0.5;
+}
+
+svg .foreground {
+    opacity: 0;
+}
+
+svg .background.selected {
+    opacity: 1;
+}
+
+svg .topBackground {
+    fill: url(#backgroundGrad);
+}
+
+svg .bottomBackground {
+    fill: url(#ground);
+}
+
+svg .donate {
+    stroke-width: 1;
+}
+
+
+svg #timeAxis line {
+    stroke: #39A10A;
+    stroke-width: 1;
+    opacity: 0.6;
+}
+
+svg .day {
+    opacity: 0.5;
+    text-anchor: middle;
+    font-size: 10px;
+}
+
+svg .selected .day {
+    opacity: 1;
+    text-anchor: middle;
+    font-size: 10px;
+}
+
+svg .month {
+    fill: #c5c5c5;
+    font-size: 10px;
+}
+
+svg .year {
+    fill: #c5c5c5;
+    font-size: 10px;
+}
+
+svg .dayColumn:not(.selected) .info {
+    display: none;
+}
+
+svg .info text {
+    font-size: 10px;
+    fill: #678568;
+}
+svg .info text.sum {
+    font-weight: bolder;
+}
+
+svg .info .label {
+    text-anchor: end;
+}
